@@ -2,7 +2,7 @@
 =======
 [![](https://meritbadge.herokuapp.com/sabisabi)](https://crates.io/crates/sabisabi)
 
-錆び錆び is a memoization software that uses Anki collections to allow players to
+錆び錆び is a memorization software that uses Anki collections to allow players to
 guess what's on the other side of a card by choosing the right one out of the proposed answers.
 
 Usage
