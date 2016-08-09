@@ -68,28 +68,28 @@ impl<'a> Anki {
                            );
             rng.shuffle(&mut options);
 
-            match card_face {
-                CardFace::Front => {
-                    println!("{}\n  1) {}\n  2) {}\n  3) {}\n  4) {}",
-                        style.paint(correct.get_back()),
-                        options[0].get_front(),
-                        options[1].get_front(),
-                        options[2].get_front(),
-                        options[3].get_front()
-                    );
-               },
-                _ => {
-                    println!("{}\n  1) {}\n  2) {}\n  3) {}\n  4) {}",
-                        style.paint(correct.get_front()),
-                        options[0].get_back(),
-                        options[1].get_back(),
-                        options[2].get_back(),
-                        options[3].get_back()
-                    );
+           loop {
+                match card_face {
+                    CardFace::Front => {
+                        println!("{}\n  1) {}\n  2) {}\n  3) {}\n  4) {}",
+                            style.paint(correct.get_back()),
+                            options[0].get_front(),
+                            options[1].get_front(),
+                            options[2].get_front(),
+                            options[3].get_front()
+                        );
+                   },
+                    _ => {
+                        println!("{}\n  1) {}\n  2) {}\n  3) {}\n  4) {}",
+                            style.paint(correct.get_front()),
+                            options[0].get_back(),
+                            options[1].get_back(),
+                            options[2].get_back(),
+                            options[3].get_back()
+                        );
+                    }
                 }
-            }
 
-            loop {
                 let mut answer = String::new();
                 let     result = stdin().read_line(&mut answer);
                 if result.is_err() {
@@ -99,19 +99,30 @@ impl<'a> Anki {
 
                 let n = answer.trim().parse::<usize>();
                 if n.is_err() {
-                    println!("Your answer is invalid. Please retry.");
-                    continue;
+                    let side = match card_face {
+                        CardFace::Front => correct.card.get_front(),
+                        _               => correct.card.get_back()
+                    };
+
+                    if answer.trim() == side {
+                        println!("Your answer is correct!\n");
+                        break;
+                    }
+                    else {
+                        println!("Your answer is invalid. Please retry.\n");
+                        continue;
+                    }
                 }
 
                 if correct.index == options[n.unwrap() - 1].index {
                     println!("Your answer is correct!\n");
                     cards.remove(correct.index);
+                    break;
                 }
                 else {
                     println!("Your answer is wrong.\n");
+                    continue;
                 }
-
-                break;
             }
         }
     }
