@@ -97,33 +97,33 @@ impl<'a> Anki {
                     continue;
                 }
 
-                let n = answer.trim().parse::<usize>();
-                if n.is_err() {
-                    let side = match card_face {
-                        CardFace::Front => correct.card.get_front(),
-                        _               => correct.card.get_back()
-                    };
+                match answer.trim().parse::<usize>() {
+                    Ok(n) => {
+                        if n > 0 && n < 5 && correct.index == options[n - 1].index {
+                            println!("Your answer is correct!\n");
+                            cards.remove(correct.index);
+                            break;
+                        }
+                        else {
+                            println!("Your answer is wrong.\n");
+                        }
+                    },
+                    Err(_) => {
+                        let side = match card_face {
+                            CardFace::Front => correct.card.get_front(),
+                            _               => correct.card.get_back()
+                        };
 
-                    if answer.trim() == side {
-                        println!("Your answer is correct!\n");
-                        break;
+                        if answer.trim() == side {
+                            println!("Your answer is correct!\n");
+                            break;
+                        }
+                        else {
+                            println!("Your answer is invalid. Please retry.\n");
+                        }
                     }
-                    else {
-                        println!("Your answer is invalid. Please retry.\n");
-                        continue;
-                    }
                 }
-
-                if correct.index == options[n.unwrap() - 1].index {
-                    println!("Your answer is correct!\n");
-                    cards.remove(correct.index);
-                    break;
-                }
-                else {
-                    println!("Your answer is wrong.\n");
-                    continue;
-                }
-            }
+           }
         }
     }
 }
