@@ -1,29 +1,47 @@
+extern crate clap;
 extern crate sabisabi;
 #[macro_use] extern crate lazy_static;
 
-use std::env;
+use clap::{App, Arg};
 use sabisabi::{Anki, AnkiExport};
 use sabisabi::guessing::CardFace;
 
-lazy_static! {
-    static ref USAGE: String = format!("Usage: {} [front/back] [path]",
-                                       env!("CARGO_PKG_NAME"));
-}
-
 fn main() {
-    if env::args().len() != 3 {
-        panic!(&**USAGE);
+    let matches = App::new(env!("CARGO_PKG_NAME"))
+        .version(env!("CARGO_PKG_VERSION"))
+        .author(env!("CARGO_PKG_AUTHORS"))
+        .about(env!("CARGO_PKG_DESCRIPTION"))
+        .arg(Arg::with_name("side")
+             .short("s")
+             .long("side")
+             .value_name("front/side")
+             .takes_value(true)
+             .help("which side of the cards you want to guess")
+             )
+        .arg(Arg::with_name("path")
+             .short("p")
+             .long("path")
+             .value_name("PATH")
+             .takes_value(true)
+             .help("path to the Anki file")
+             )
+        .get_matches();
+
+    if let Some(side) = matches.value_of("side") {
+        if let Some(path) = matches.value_of("path") {
+            let anki = Anki::from(AnkiExport::PlainText(path)).unwrap();
+
+            match &*side.to_lowercase() {
+                "front" => anki.guess(CardFace::Front),
+                "back"  => anki.guess(CardFace::Back),
+                _       => println!("Invalid side given.")
+            }
+        }
+        else {
+            println!("Path not provided. Run with --help for more instructions.");
+        }
     }
-
-    let path = env::args().nth(2)
-        .expect(&**USAGE);
-    let anki = Anki::from(AnkiExport::PlainText(&*path)).unwrap();
-
-    let side = env::args().nth(1)
-        .expect(&**USAGE);
-    match &*side.to_lowercase() {
-        "front" => anki.guess(CardFace::Front),
-        "back"  => anki.guess(CardFace::Back),
-        _       => panic!(&**USAGE)
+    else {
+        println!("Side not provided. Run with --help for more instructions.");
     }
 }
