@@ -1,6 +1,6 @@
 [package]
 name    = "sabisabi"
-version = "0.2.0"
+version = "0.2.1"
 
 repository  = "https://github.com/RoxasShadow/sabisabi"
 authors     = ["Giovanni Capuano <webmaster@giovannicapuano.net>"]
