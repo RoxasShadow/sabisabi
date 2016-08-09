@@ -35,6 +35,22 @@ per cui
 4
 Your answer is wrong.
 
+おおきい (grande)
+  1) 磨く
+  2) 大きい
+  3) ２時間後
+  4) 29日
+大きい
+Your answer is correct!
+
+おとす (far cadere, tra.)
+  1) 変わる
+  2) 火曜日
+  3) 土曜日
+  4) 落とす
+落
+Your answer is invalid. Please retry.
+
 きゅう９
   1) ボールペン
   2) 言う
