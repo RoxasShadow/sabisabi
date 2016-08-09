@@ -25,15 +25,21 @@ fn main() {
              .takes_value(true)
              .help("path to the Anki file")
              )
+        .arg(Arg::with_name("strip_parents")
+             .long("strip-parents")
+             .help("remove all the parenthesis from the Q&As")
+             )
+
         .get_matches();
 
     if let Some(side) = matches.value_of("side") {
         if let Some(path) = matches.value_of("path") {
             let anki = Anki::from(AnkiExport::PlainText(path)).unwrap();
 
+            let strip_parents = matches.is_present("strip_parents");
             match &*side.to_lowercase() {
-                "front" => anki.guess(CardFace::Front),
-                "back"  => anki.guess(CardFace::Back),
+                "front" => anki.guess(CardFace::Front, strip_parents),
+                "back"  => anki.guess(CardFace::Back, strip_parents),
                 _       => println!("Invalid side given.")
             }
         }

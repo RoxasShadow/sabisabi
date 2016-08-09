@@ -1,6 +1,7 @@
 use std::io::stdin;
 use rand::{thread_rng, Rng};
 use ansi_term::Style;
+use regex::Regex;
 
 use super::{Anki, Card};
 
@@ -48,17 +49,16 @@ impl<'a> Anki {
         selections
     }
 
-    pub fn guess(&self, card_face: CardFace) {
+    pub fn guess(&self, card_face: CardFace, strip_parents: bool) {
         let mut rng   = thread_rng();
         let mut cards = self.get_cards();
         let     style = Style::new().bold();
 
         while !cards.is_empty() {
-
             let correct = Self::select(cards.to_owned(), 1).get(0)
                 .unwrap()
                 .to_owned();
-            let wrongs  = Self::select(cards.to_owned(), 3);
+            let wrongs = Self::select(cards.to_owned(), 3);
 
             let mut options = vec![];
             options.extend(wrongs.iter().cloned());
@@ -69,25 +69,37 @@ impl<'a> Anki {
             rng.shuffle(&mut options);
 
            loop {
-                match card_face {
+                let question = match card_face {
                     CardFace::Front => {
-                        println!("{}\n  1) {}\n  2) {}\n  3) {}\n  4) {}",
+                        format!("{}\n  1) {}\n  2) {}\n  3) {}\n  4) {}",
                             style.paint(correct.get_back()),
                             options[0].get_front(),
                             options[1].get_front(),
                             options[2].get_front(),
                             options[3].get_front()
-                        );
+                        )
                    },
                     _ => {
-                        println!("{}\n  1) {}\n  2) {}\n  3) {}\n  4) {}",
+                        format!("{}\n  1) {}\n  2) {}\n  3) {}\n  4) {}",
                             style.paint(correct.get_front()),
                             options[0].get_back(),
                             options[1].get_back(),
                             options[2].get_back(),
                             options[3].get_back()
-                        );
+                        )
                     }
+                };
+
+                lazy_static! {
+                    static ref PARENTS_RE: Regex = Regex::new(r"\([^)]*\)").unwrap();
+                }
+
+                if strip_parents {
+                    println!("{}", PARENTS_RE.replace_all(
+                            &*question, ""));
+                }
+                else {
+                    println!("{}", question);
                 }
 
                 let mut answer = String::new();
