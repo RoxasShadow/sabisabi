@@ -9,16 +9,18 @@ Usage
 -----
 First of all, export your anki deck to a plain text file through the official client.
 
-A sample command to run 錆び錆び could be `$ cargo run front ~/Desktop/kanji.txt`.
+Compile 錆び錆び by running `$ cargo build --release` and execute it with a command
+like `$ ./sabisabi -p ../kanji.txt -s back --strip-parents`.
 
-Press `Ctrl` + `C` to quit.
+You can get help by running `$ ./sabisabi --help`.
+
+During its execution, press `Ctrl` + `C` to quit.
 
 Example
 -------
 ```
 ┌[giovanni@lifestream-3] [/dev/ttys001] [master]
-└[~/Desktop/sabisabi]> cargo run front ~/Desktop/kanji.txt
-     Running `target/debug/sabisabi front /Users/giovanni/Desktop/kanji.txt`
+└[~]> sabisabi -s front -p ~/Desktop/kanji.txt
 da quando?
   1) 目
   2) 行く
