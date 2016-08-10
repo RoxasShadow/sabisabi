@@ -32,6 +32,13 @@ fn main() {
              .takes_value(true)
              .help("format of the exported Anki deck")
              )
+        .arg(Arg::with_name("tag")
+             .short("t")
+             .long("tag")
+             .value_name("TAG")
+             .takes_value(true)
+             .help("only cards with given tag will be considered")
+             )
         .arg(Arg::with_name("strip_parents")
              .long("strip-parents")
              .help("remove all the parenthesis from the Q&As")
@@ -42,8 +49,12 @@ fn main() {
     if let Some(side) = matches.value_of("side") {
         if let Some(path) = matches.value_of("path") {
             if let Some(format) = matches.value_of("format") {
-                let format = AnkiExport::from(format, path);
-                let anki   = Anki::from(format).unwrap();
+                let     format = AnkiExport::from(format, path);
+                let mut anki   = Anki::from(format).unwrap();
+
+                if let Some(tag) = matches.value_of("tag") {
+                    anki.select_tag(&*tag);
+                }
 
                 let strip_parents = matches.is_present("strip_parents");
                 match &*side.to_lowercase() {

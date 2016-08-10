@@ -143,6 +143,11 @@ impl<'a> Anki {
         self.cards.to_owned()
     }
 
+    pub fn select_tag(&'a mut self, tag: &'a str) {
+        let some_tag = Some(tag.to_owned());
+        self.cards.retain(|c| c.tag == some_tag);
+    }
+
     pub fn from(source: AnkiExport<'a>) -> Result<Anki, io::Error> {
         match source {
             AnkiExport::AnkiPackage(source)    => AnkiExport::from_anki_package(source),
