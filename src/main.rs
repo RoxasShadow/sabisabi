@@ -23,7 +23,14 @@ fn main() {
              .long("path")
              .value_name("PATH")
              .takes_value(true)
-             .help("path to the Anki file")
+             .help("path to the Anki deck")
+             )
+        .arg(Arg::with_name("format")
+             .short("f")
+             .long("format")
+             .value_name("AnkiPackage/Notes/Cards")
+             .takes_value(true)
+             .help("format of the exported Anki deck")
              )
         .arg(Arg::with_name("strip_parents")
              .long("strip-parents")
@@ -34,13 +41,19 @@ fn main() {
 
     if let Some(side) = matches.value_of("side") {
         if let Some(path) = matches.value_of("path") {
-            let anki = Anki::from(AnkiExport::PlainText(path)).unwrap();
+            if let Some(format) = matches.value_of("format") {
+                let format = AnkiExport::from(format, path);
+                let anki   = Anki::from(format).unwrap();
 
-            let strip_parents = matches.is_present("strip_parents");
-            match &*side.to_lowercase() {
-                "front" => anki.guess(CardFace::Front, strip_parents),
-                "back"  => anki.guess(CardFace::Back, strip_parents),
-                _       => println!("Invalid side given.")
+                let strip_parents = matches.is_present("strip_parents");
+                match &*side.to_lowercase() {
+                    "front" => anki.guess(CardFace::Front, strip_parents),
+                    "back"  => anki.guess(CardFace::Back, strip_parents),
+                    _       => println!("Invalid side given.")
+                }
+            }
+            else {
+                println!("Format not provided. Run with --help for more instructions.");
             }
         }
         else {
