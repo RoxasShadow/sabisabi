@@ -15,6 +15,13 @@ pub struct Card {
     back:  String
 }
 
+impl PartialEq for Card {
+    fn eq(&self, other: &Card) -> bool {
+        self.front == other.front &&
+            self.back == other.back
+    }
+}
+
 impl<'a> Card {
     fn new(front: &str, back: &str) -> Card {
         Card { front: front.to_owned(), back: back.to_owned() }
