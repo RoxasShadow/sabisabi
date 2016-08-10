@@ -16,6 +16,12 @@ pub struct SelectedCard {
     card:  Card,
 }
 
+impl PartialEq for SelectedCard {
+    fn eq(&self, other: &SelectedCard) -> bool {
+        self.card == other.card
+    }
+}
+
 impl SelectedCard {
     fn new(index: usize, card: Card) -> SelectedCard {
         SelectedCard { index: index, card: card }
@@ -31,22 +37,31 @@ impl SelectedCard {
 }
 
 impl<'a> Anki {
-    fn select(cards: Vec<Card>, count: i32) -> Vec<SelectedCard> {
+    fn select(cards: Vec<Card>, count: usize) -> Vec<SelectedCard> {
         let     len = cards.len();
         let mut rng = thread_rng();
         let mut selections: Vec<SelectedCard> = vec![];
 
-        for _ in 0..count {
-            let n = rng.gen_range(0, len);
-
-            selections.push(
-                SelectedCard::new(n, cards.get(n)
-                                  .unwrap()
-                                  .to_owned())
-                );
+        if len < count {
+            panic!("There are not enough cards in the deck.");
         }
 
-        selections
+        loop {
+            let n = rng.gen_range(0, len);
+
+            let new_card = SelectedCard::new(n, cards.get(n)
+                                             .unwrap()
+                                             .to_owned()
+                                             );
+
+            if !selections.contains(&new_card) {
+                selections.push(new_card);
+            }
+
+            if selections.len() == count {
+                return selections;
+            }
+        }
     }
 
     pub fn guess(&self, card_face: CardFace, strip_parents: bool) {
@@ -55,10 +70,10 @@ impl<'a> Anki {
         let     style = Style::new().bold();
 
         while !cards.is_empty() {
-            let correct = Self::select(cards.to_owned(), 1).get(0)
+            let correct = Self::select(cards.to_owned(), 1 as usize).get(0)
                 .unwrap()
                 .to_owned();
-            let wrongs = Self::select(cards.to_owned(), 3);
+            let wrongs = Self::select(cards.to_owned(), 3 as usize);
 
             let mut options = vec![];
             options.extend(wrongs.iter().cloned());
