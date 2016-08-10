@@ -37,31 +37,42 @@ impl SelectedCard {
 }
 
 impl<'a> Anki {
-    fn select(cards: Vec<Card>, count: usize) -> Vec<SelectedCard> {
-        let     len = cards.len();
-        let mut rng = thread_rng();
-        let mut selections: Vec<SelectedCard> = vec![];
+    fn get_random_pair(cards: Vec<Card>, cards_number: usize) -> (SelectedCard, Vec<SelectedCard>) {
+        let len = cards.len();
 
-        if len < count {
+        if len < cards_number + 1 {
             panic!("There are not enough cards in the deck.");
         }
 
+        let mut rng = thread_rng();
+        let mut found_n: Vec<usize> = Vec::new();
+
         loop {
             let n = rng.gen_range(0, len);
-
-            let new_card = SelectedCard::new(n, cards.get(n)
-                                             .unwrap()
-                                             .to_owned()
-                                             );
-
-            if !selections.contains(&new_card) {
-                selections.push(new_card);
+            if !found_n.contains(&n) {
+                found_n.push(n);
             }
-
-            if selections.len() == count {
-                return selections;
+            if found_n.len() == cards_number + 1 {
+                break;
             }
         }
+
+        let p1 = {
+            let n = found_n.pop().unwrap();
+            SelectedCard::new(n, cards.get(n)
+                              .unwrap()
+                              .to_owned()
+                              )
+        };
+
+        let p2 = found_n.into_iter().map(|n| {
+            SelectedCard::new(n, cards.get(n)
+                              .unwrap()
+                              .to_owned()
+                              )
+        }).collect::<Vec<SelectedCard>>();
+
+        (p1, p2)
     }
 
     pub fn guess(&self, card_face: CardFace, strip_parents: bool) {
@@ -70,17 +81,13 @@ impl<'a> Anki {
         let     style = Style::new().bold();
 
         while !cards.is_empty() {
-            let correct = Self::select(cards.to_owned(), 1 as usize).get(0)
-                .unwrap()
-                .to_owned();
-            let wrongs = Self::select(cards.to_owned(), 3 as usize);
+            let (correct, wrongs) = Self::get_random_pair(cards.to_owned(), 3 as usize);
 
             let mut options = vec![];
-            options.extend(wrongs.iter().cloned());
-            options.extend(vec![correct.to_owned()]
-                           .iter()
-                           .cloned()
-                           );
+            options.extend(wrongs.into_iter()
+                           .to_owned());
+            options.extend(vec![correct.to_owned()].into_iter()
+                           .to_owned());
             rng.shuffle(&mut options);
 
            loop {
