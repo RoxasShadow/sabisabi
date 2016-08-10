@@ -10,7 +10,7 @@ Usage
 First of all, export your anki deck to a plain text file through the official client.
 
 Compile 錆び錆び by running `$ cargo build --release` and execute it with a command
-like `$ ./sabisabi -p ../kanji.txt -s back --strip-parents`.
+like `$ ./sabisabi --path ../kanji.txt -side back --format notes --tag 日記 --strip-parents`.
 
 You can get help by running `$ ./sabisabi --help`.
 
