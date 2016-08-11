@@ -14,11 +14,3 @@ lazy_static = "0.2"
 rand        = "0.3"
 ansi_term   = "0.8"
 clap        = "2.10"
-
-[lib]
-name = "sabisabi"
-path = "src/lib.rs"
-
-[[bin]]
-name = "sabisabi"
-path = "src/main.rs"
